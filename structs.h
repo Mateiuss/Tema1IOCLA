@@ -25,3 +25,7 @@ typedef struct data_structure {
 // 		''int32_t'' prima bancnota;
 // 		''int32_t'' a doua bancnota;
 // 		''char*'' - numele celui_caruia i se dedica (marime variabila);
+
+// printf("%"PRId8"\n", val)   //unde val este un int8_t
+// printf("%"PRId16"\n", val)  //unde val este un int16_t
+// printf("%"PRId32"\n", val)  //unde val este un int32_t
