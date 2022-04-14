@@ -440,20 +440,7 @@ int main() {
 		readline[strcspn(readline, "\n")] = 0;
 
 		if (strstr(readline, "insert_at")) {
-			// data_structure *data = malloc(sizeof(data_structure));
-			// if (!data) {
-			// 	free(readline);
-			// 	printf("Nu s-a putut aloca memorie pentru structura!\n");
-			// 	return -1;
-			// }
-
-			// data->header = malloc(sizeof(head));
-			// if (!data->header) {
-			// 	free(data);
-			// 	free(readline);
-			// 	printf("Nu s-a putut aloca memorie pentru header!\n");
-			// 	return -1;
-			// }
+			
 
 			char *parser = strtok(readline, " ");
 			parser = strtok(NULL, " ");
