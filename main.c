@@ -340,6 +340,92 @@ void print(void *arr, int len)
 	free(header);
 }
 
+data_structure* alocare_structura(char *text)
+{
+	data_structure *data = malloc(sizeof(data_structure));
+	if (!data) {
+		return NULL;
+	}
+
+	data->header = malloc(sizeof(head));
+	if (!data->header) {
+		free(data);
+		return NULL;
+	}
+
+	unsigned char type = data->header->type = atoi(text);
+
+	char *name1 = strtok(NULL, " ");
+	text = strtok(NULL, " ");
+	int val1 = atoi(text);
+	text = strtok(NULL, " ");
+	int val2 = atoi(text);
+	char *name2 = strtok(NULL, " ");
+
+	data->header->len = strlen(name1) + strlen(name2) + 2;
+
+	if (type == 1) {
+		data->header->len += 2 * sizeof(int8_t);
+
+		data->data = malloc(data->header->len);
+		if (!data->data) {
+			free(data->header);
+			free(data);
+			return NULL;
+		}
+
+		int len = 0;
+
+		memcpy(data->data, name1, strlen(name1) + 1);
+		len += strlen(name1) + 1;
+		memcpy(data->data + len, &val1, sizeof(int8_t));
+		len += sizeof(int8_t);
+		memcpy(data->data + len, &val2, sizeof(int8_t));
+		len += sizeof(int8_t);
+		memcpy(data->data + len, name2, strlen(name2) + 1);
+	} else if (type == 2) {
+		data->header->len += sizeof(int16_t) + sizeof(int32_t);
+
+		data->data = malloc(data->header->len);
+		if (!data->data) {
+			free(data->header);
+			free(data);
+			return NULL;
+		}
+
+		int len = 0;
+
+		memcpy(data->data, name1, strlen(name1) + 1);
+		len += strlen(name1) + 1;
+		memcpy(data->data + len, &val1, sizeof(int16_t));
+		len += sizeof(int16_t);
+		memcpy(data->data + len, &val2, sizeof(int32_t));
+		len += sizeof(int32_t);
+		memcpy(data->data + len, name2, strlen(name2) + 1);
+	} else if (type == 3) {
+		data->header->len += 2 * sizeof(int32_t);
+
+		data->data = malloc(data->header->len);
+		if (!data->data) {
+			free(data->header);
+			free(data);
+			return NULL;
+		}
+
+		int len = 0;
+
+		memcpy(data->data, name1, strlen(name1) + 1);
+		len += strlen(name1) + 1;
+		memcpy(data->data + len, &val1, sizeof(int32_t));
+		len += sizeof(int32_t);
+		memcpy(data->data + len, &val2, sizeof(int32_t));
+		len += sizeof(int32_t);
+		memcpy(data->data + len, name2, strlen(name2) + 1);
+	}
+
+	return data;
+}
+
 int main() {
 	void *arr = NULL;
 	int len = 0;
@@ -354,20 +440,20 @@ int main() {
 		readline[strcspn(readline, "\n")] = 0;
 
 		if (strstr(readline, "insert_at")) {
-			data_structure *data = malloc(sizeof(data_structure));
-			if (!data) {
-				free(readline);
-				printf("Nu s-a putut aloca memorie pentru structura!\n");
-				return -1;
-			}
+			// data_structure *data = malloc(sizeof(data_structure));
+			// if (!data) {
+			// 	free(readline);
+			// 	printf("Nu s-a putut aloca memorie pentru structura!\n");
+			// 	return -1;
+			// }
 
-			data->header = malloc(sizeof(head));
-			if (!data->header) {
-				free(data);
-				free(readline);
-				printf("Nu s-a putut aloca memorie pentru header!\n");
-				return -1;
-			}
+			// data->header = malloc(sizeof(head));
+			// if (!data->header) {
+			// 	free(data);
+			// 	free(readline);
+			// 	printf("Nu s-a putut aloca memorie pentru header!\n");
+			// 	return -1;
+			// }
 
 			char *parser = strtok(readline, " ");
 			parser = strtok(NULL, " ");
@@ -376,81 +462,85 @@ int main() {
 
 			parser = strtok(NULL, " ");
 
-			unsigned char type = data->header->type = atoi(parser);
+			data_structure *data = alocare_structura(parser);
 
-			char *name1 = strtok(NULL, " ");
-			parser = strtok(NULL, " ");
-			int val1 = atoi(parser);
-			parser = strtok(NULL, " ");
-			int val2 = atoi(parser);
-			char *name2 = strtok(NULL, " ");
+			// parser = strtok(NULL, " ");
 
-			data->header->len = strlen(name1) + strlen(name2) + 2;
+			// unsigned char type = data->header->type = atoi(parser);
 
-			if (type == 1) {
-				data->header->len += 2 * sizeof(int8_t);
+			// char *name1 = strtok(NULL, " ");
+			// parser = strtok(NULL, " ");
+			// int val1 = atoi(parser);
+			// parser = strtok(NULL, " ");
+			// int val2 = atoi(parser);
+			// char *name2 = strtok(NULL, " ");
 
-				data->data = malloc(data->header->len);
-				if (!data->data) {
-					free(data->header);
-					free(data);
-					free(readline);
-					printf("Nu s-a putut aloca zona de memorie de date!\n");
-					return -1;
-				}
+			// data->header->len = strlen(name1) + strlen(name2) + 2;
 
-				int len = 0;
+			// if (type == 1) {
+			// 	data->header->len += 2 * sizeof(int8_t);
 
-				memcpy(data->data, name1, strlen(name1) + 1);
-				len += strlen(name1) + 1;
-				memcpy(data->data + len, &val1, sizeof(int8_t));
-				len += sizeof(int8_t);
-				memcpy(data->data + len, &val2, sizeof(int8_t));
-				len += sizeof(int8_t);
-				memcpy(data->data + len, name2, strlen(name2) + 1);
-			} else if (type == 2) {
-				data->header->len += sizeof(int16_t) + sizeof(int32_t);
+			// 	data->data = malloc(data->header->len);
+			// 	if (!data->data) {
+			// 		free(data->header);
+			// 		free(data);
+			// 		free(readline);
+			// 		printf("Nu s-a putut aloca zona de memorie de date!\n");
+			// 		return -1;
+			// 	}
 
-				data->data = malloc(data->header->len);
-				if (!data->data) {
-					free(data->header);
-					free(data);
-					free(readline);
-					printf("Nu s-a putut aloca zona de memorie de date!\n");
-					return -1;
-				}
+			// 	int len = 0;
 
-				int len = 0;
+			// 	memcpy(data->data, name1, strlen(name1) + 1);
+			// 	len += strlen(name1) + 1;
+			// 	memcpy(data->data + len, &val1, sizeof(int8_t));
+			// 	len += sizeof(int8_t);
+			// 	memcpy(data->data + len, &val2, sizeof(int8_t));
+			// 	len += sizeof(int8_t);
+			// 	memcpy(data->data + len, name2, strlen(name2) + 1);
+			// } else if (type == 2) {
+			// 	data->header->len += sizeof(int16_t) + sizeof(int32_t);
 
-				memcpy(data->data, name1, strlen(name1) + 1);
-				len += strlen(name1) + 1;
-				memcpy(data->data + len, &val1, sizeof(int16_t));
-				len += sizeof(int16_t);
-				memcpy(data->data + len, &val2, sizeof(int32_t));
-				len += sizeof(int32_t);
-				memcpy(data->data + len, name2, strlen(name2) + 1);
-			} else if (type == 3) {
-				data->header->len += 2 * sizeof(int32_t);
+			// 	data->data = malloc(data->header->len);
+			// 	if (!data->data) {
+			// 		free(data->header);
+			// 		free(data);
+			// 		free(readline);
+			// 		printf("Nu s-a putut aloca zona de memorie de date!\n");
+			// 		return -1;
+			// 	}
 
-				data->data = malloc(data->header->len);
-				if (!data->data) {
-					free(data->header);
-					free(data);
-					free(readline);
-					printf("Nu s-a putut aloca zona de memorie de date!\n");
-					return -1;
-				}
+			// 	int len = 0;
 
-				int len = 0;
+			// 	memcpy(data->data, name1, strlen(name1) + 1);
+			// 	len += strlen(name1) + 1;
+			// 	memcpy(data->data + len, &val1, sizeof(int16_t));
+			// 	len += sizeof(int16_t);
+			// 	memcpy(data->data + len, &val2, sizeof(int32_t));
+			// 	len += sizeof(int32_t);
+			// 	memcpy(data->data + len, name2, strlen(name2) + 1);
+			// } else if (type == 3) {
+			// 	data->header->len += 2 * sizeof(int32_t);
 
-				memcpy(data->data, name1, strlen(name1) + 1);
-				len += strlen(name1) + 1;
-				memcpy(data->data + len, &val1, sizeof(int32_t));
-				len += sizeof(int32_t);
-				memcpy(data->data + len, &val2, sizeof(int32_t));
-				len += sizeof(int32_t);
-				memcpy(data->data + len, name2, strlen(name2) + 1);
-			}
+			// 	data->data = malloc(data->header->len);
+			// 	if (!data->data) {
+			// 		free(data->header);
+			// 		free(data);
+			// 		free(readline);
+			// 		printf("Nu s-a putut aloca zona de memorie de date!\n");
+			// 		return -1;
+			// 	}
+
+			// 	int len = 0;
+
+			// 	memcpy(data->data, name1, strlen(name1) + 1);
+			// 	len += strlen(name1) + 1;
+			// 	memcpy(data->data + len, &val1, sizeof(int32_t));
+			// 	len += sizeof(int32_t);
+			// 	memcpy(data->data + len, &val2, sizeof(int32_t));
+			// 	len += sizeof(int32_t);
+			// 	memcpy(data->data + len, name2, strlen(name2) + 1);
+			// }
 
 			add_at(&arr, &len, data, insert);
 
