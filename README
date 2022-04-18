@@ -1,0 +1,11 @@
+#  [Tema1PCLP2](https://ocw.cs.pub.ro/courses/iocla/teme/tema-1 "Tema1PCLP2")
+## Dudu Matei-Ioan 313CB
+
+### In functia main aloc memorie pentru o zona de memorie in care citesc fiecare linie in parte. Mai departe, determin instructiunea citita in functie de primul cuvant cu care incepe propozitia, dupa care programul intra pe conditia specifica instructiunii respective.
+### In cazul inserarilor, salvez informatiile introduse intr-un element de tipul structurii date in enunt (alocat dinamic), toate acestea facandu-se in interiorul functiei alocare_structura, functie care la final returneaza un pointer catre structura alocata (in care s-au si salvat datele). Dupa ce structura a fost returnata, apelez functia de inserare in vector.
+### Pentru inserarea la sfarsit, redimensionez vectorul la dimensiunea veche + dimensinea elementelor din structura pe care urmeaza sa o inserez, dupa care parcurg vectorul pana la sfarsit si copiez datele, cu ajutorul functiei memcpy, datele din structura.
+### Pentru inserarea la un anumit index, la fel ca in cazul precedent, redimensionez vectorul, dupa care parcurg primele index - 1 elemente si ma opresc, shiftez la dreapta datele cu dimensiunea datelor pe care urmeaza sa le inserez si introduc datele.
+### De mentionat este faptul ca daca vectorul nu a fost alocat, voi realiza aceasta alocare in cadrul functiei add_last.
+### Pentru stergerea unui element de la un anumit index procedeul este similar cu cel de la functia anterioara, anume, parcurg primele index - 1 elemente, shiftez la stanga octetii cu dimensiunea elementului pe care il sterg si micsorez vectorul.
+### Functiile find si print sunt foarte asemanatoare, intrucat se folosesc de aceeasi functie de afisare a unui singur element, doar ca functia print afiseaza fiecare element din vector, iar functia find parcurge vectorul pana la index-ul dorit si afiseaza doar elementul cu pricina.
+### De asemenea, am mai implementat o functie care determina numarul curent de octeti alocati vectorului de date. Prin aceasta functie parcurg vectorul element cu element si salvez intr-o variabila numarul de octeti parcursi. La final returnez valoarea continuta in variabila din urma.
