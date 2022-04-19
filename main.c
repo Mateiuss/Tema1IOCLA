@@ -118,19 +118,19 @@ void afisare(void *data_block, head *header, int *size)
 	// Salvez in variabilele anterioare valoarea numerica a bancnotelor in functie de tip
 	if (type == 1) {
 		memcpy(&val1, data_block + *size, sizeof(int8_t));
-		++(*size);
+		*size += sizeof(int8_t);
 		memcpy(&val2, data_block + *size, sizeof(int8_t));
-		++(*size);
+		*size += sizeof(int8_t);
 	} else if (type == 2) {
 		memcpy(&val3, data_block + *size, sizeof(int16_t));
-		(*size) += 2;
+		*size += sizeof(int16_t);
 		memcpy(&val4, data_block + *size, sizeof(int32_t));
-		(*size) += 4;
+		*size += sizeof(int32_t);
 	} else if (type == 3) {
 		memcpy(&val4, data_block + *size, sizeof(int32_t));
-		(*size) += 4;
+		*size += sizeof(int32_t);
 		memcpy(&val5, data_block + *size, sizeof(int32_t));
-		(*size) += 4;
+		*size += sizeof(int32_t);
 	}
 
 	name2 = data_block + *size;
@@ -154,21 +154,15 @@ int get_nr_of_bytes(void *data_block, int len)
 	int poz = 0; // pozitia curenta ca index
 	int cur_bytes = 0; // numarul curent de octeti
 
-	// Aloc memorie pentru header
-	head *header = malloc(sizeof(head));
-	if (!header) {
-		return -1;
-	}
+	head *header = NULL;
 
 	// Parcurg tot vectorul pentru a-i numara octetii
 	while (poz < len) {
-		memcpy(header, data_block + cur_bytes, sizeof(head));
+		header = (head*)(data_block + cur_bytes);
 		cur_bytes += sizeof(head) + header->len;
 
 		++poz;
 	}
-	// Eliberez memoria alocata pentru header
-	free(header);
 
 	return cur_bytes;
 }
@@ -218,12 +212,7 @@ int add_at(void **arr, int *len, data_structure *data, int index)
 		return add_last(arr, len, data);
 	}
 
-	// Aloc memorie pentru header, pentru a putea citi din arr
-	head *header = malloc(sizeof(head));
-	if (!header) {
-		printf("In functia add_at nu s-a putut aloca headerul!\n");
-		return 1;
-	}
+	head *header = NULL;
 
 	int size = get_nr_of_bytes(*arr, *len);
 	int new_size = size + sizeof(head) + data->header->len;
@@ -231,7 +220,6 @@ int add_at(void **arr, int *len, data_structure *data, int index)
 	// Redimensionez vectorul dupa noua lungime
 	void *aux = realloc(*arr, new_size);
 	if (!aux) {
-		free(header);
 		return 1;
 	}
 	*arr = aux;
@@ -241,7 +229,7 @@ int add_at(void **arr, int *len, data_structure *data, int index)
 
 	// Parcurg primele index - 1 dedicatii
 	while (poz < index) {
-		memcpy(header, *arr + len2, sizeof(head));
+		header = *arr + len2;
 		len2 += header->len + sizeof(head);
 		
 		poz++;
@@ -249,7 +237,6 @@ int add_at(void **arr, int *len, data_structure *data, int index)
 
 	void *arr2 = malloc(new_size);
 	if (!arr2) {
-		free(header);
 		return 1;
 	}
 
@@ -262,7 +249,6 @@ int add_at(void **arr, int *len, data_structure *data, int index)
 	memcpy(*arr + len2 + sizeof(head), data->data, data->header->len);
 
 	// Eliberez memoria alocata
-	free(header);
 	free(arr2);
 
 	(*len)++;
@@ -277,19 +263,14 @@ void find(void *data_block, int len, int index)
 		return;
 	}
 
-	// Aloc memorie pentru un header, pentru aputea citi din data_block
-	head *header = malloc(sizeof(head));
-	if (!header) {
-		printf("In find nu s-a putut aloca memorie pentru header!\n");
-		return;
-	}
+	head *header = NULL;
 
 	int poz = 0;
 	int curr_bytes = 0;
 
 	// Parcurg primele index - 1 dedicatii
 	while (poz <= index) {
-		memcpy(header, data_block + curr_bytes, sizeof(head));
+		header = data_block + curr_bytes;
 		curr_bytes += sizeof(header) + header->len;
 
 		++poz;
@@ -299,9 +280,6 @@ void find(void *data_block, int len, int index)
 
 	// Afisez dedicatia cu numarul index
 	afisare(data_block, header, &curr_bytes);
-
-	// Eliberez memoria alocata pentru header
-	free(header);
 }
 
 int delete_at(void **arr, int *len, int index)
@@ -314,19 +292,15 @@ int delete_at(void **arr, int *len, int index)
 		return 0;
 	}
 
-	// Aloc memorie pentru headerul 
-	head *header = malloc(sizeof(head));
-	if (!header) {
-		printf("In delete_at nu s-a putut aloca header-ul!\n");
-		return 1;
-	}
+	head *header = NULL;
 
 	int size = get_nr_of_bytes(*arr, *len);
 	int poz = 0;
 	int len2 = 0;
+
 	// Parcurg primele elemente pana la elementul index
 	while (poz < index) {
-		memcpy(header, *arr + len2, sizeof(head));
+		header = *arr + len2;
 
 		len2 += sizeof(head) + header->len;
 
@@ -334,7 +308,7 @@ int delete_at(void **arr, int *len, int index)
 	}
 
 	int len3 = len2;
-	memcpy(header, *arr + len2, sizeof(head));
+	header = *arr + len2;
 	len3 += sizeof(head) + header->len;
 
 	// Suprascriu datele elementului pe care trebuie sa il sterg, shiftand bitii catre stanga
@@ -344,14 +318,11 @@ int delete_at(void **arr, int *len, int index)
 	void *aux = realloc(*arr, size - (len3 - len2));
 	if (!aux) {
 		printf("In delete_at nu s-a putut realoca\n");
-		free(header);
 		return 1;
 	}
 
 	*arr = aux;
 	--(*len);
-
-	free(header);
 
 	return 0;
 }
@@ -361,24 +332,16 @@ void print(void *data_block, int len)
 	int curr_bytes = 0; // Numarul curent de octeti numarati
 	int nr_of_bytes = get_nr_of_bytes(data_block, len); // Numarul total de octeti
 
-	// Aloc headerul utilizat pentru citirea datelor de tip head
-	head *header = malloc(sizeof(head));
-	if (!header) {
-		printf("In print nu s-a putut aloca memorie pentru header!\n");
-		return;
-	}
+	head *header = NULL;
 
 	while (curr_bytes < nr_of_bytes) {
-		// Copiez in header tipul si lungimea
-		memcpy(header, data_block + curr_bytes, sizeof(head));
+		header = data_block + curr_bytes;
 		// Incrementez numarul curent de octeti numarati cu dimensiunea header-ului
 		curr_bytes += sizeof(head);
 
-		// Afisez functia de afisare pentru un element din vector
+		// Apelez functia de afisare pentru un element din vector
 		afisare(data_block, header, &curr_bytes);
 	}
-
-	free(header);
 }
 
 int main() {
@@ -414,12 +377,16 @@ int main() {
 				return -1;
 			}
 
-			add_at(&arr, &len, data, insert);
+			int success = add_at(&arr, &len, data, insert);
 
 			free(data->header);
 			free(data->data);
 			free(data);
-
+			
+			if (success) {
+				printf("Executia functiei add_at nu s-a realizat cu succes!\n");
+				break;
+			}
 		} else if (strstr(readline, "insert")) { // Verific daca se introduce comanda insert
 			char *parser = strtok(readline, " ");
 			parser = strtok(NULL, " ");
@@ -434,17 +401,24 @@ int main() {
 				return -1;
 			}
 
-			add_last(&arr, &len, data);
+			int success = add_last(&arr, &len, data);
 
 			free(data->header);
 			free(data->data);
 			free(data);
 
+			if (success) {
+				printf("Executia functiei add_last nu s-a realizat cu succes!\n");
+				break;
+			}
 		} else if (strstr(readline, "delete_at")) { // Verific daca se introduce comanda delete_at
 			char *parser = strtok(readline, " ");
 			parser = strtok(NULL, " ");
 
-			delete_at(&arr, &len, atoi(parser));
+			if (delete_at(&arr, &len, atoi(parser))) {
+				printf("Executia functiei delete_at nu s-a realizat cu succes!\n");
+				break;
+			}
 		} else if (strstr(readline, "print")) { // Verific daca se introduce comanda print
 			print(arr, len);
 		} else if(strstr(readline, "find")) { // Verific daca se introduce comanda find
